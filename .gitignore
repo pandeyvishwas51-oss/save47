@@ -1,0 +1,55 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# build output
+.next
+.turbo
+.vercel
+dist
+
+# testing
+coverage
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# system
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.iml
+
+# Android / TWA — these contain secrets
+apps/android/android.keystore
+apps/android/android.keystore.b64
+apps/android/app-release-signed.apk*
+apps/android/app/
+apps/android/build/
+apps/android/.gradle/
+apps/android/gradle/
+apps/android/local.properties
+apps/web/public/downloads/
+
+# typescript
+*.tsbuildinfo
+
+# misc
+.cache
+*.pem

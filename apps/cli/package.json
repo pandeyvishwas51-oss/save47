@@ -1,0 +1,33 @@
+{
+  "name": "save47-cli",
+  "version": "0.1.0",
+  "description": "Command-line client for Save47 — download videos from YouTube, Instagram, TikTok and 1000+ sites.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "save47": "dist/index.js"
+  },
+  "files": ["dist", "README.md"],
+  "engines": { "node": ">=18" },
+  "keywords": [
+    "video downloader",
+    "youtube downloader",
+    "tiktok downloader",
+    "instagram downloader",
+    "yt-dlp",
+    "cli"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "kleur": "^4.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.12.0"
+  }
+}

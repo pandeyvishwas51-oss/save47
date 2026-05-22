@@ -1,0 +1,47 @@
+{
+  "packageId": "app.save47.twa",
+  "host": "save47.com",
+  "name": "Save47",
+  "launcherName": "Save47",
+  "display": "standalone",
+  "themeColor": "#6366f1",
+  "navigationColor": "#09090b",
+  "navigationColorDark": "#09090b",
+  "navigationDividerColor": "#09090b",
+  "navigationDividerColorDark": "#09090b",
+  "backgroundColor": "#09090b",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://save47.com/icons/icon-512.png",
+  "maskableIconUrl": "https://save47.com/icons/icon-512-maskable.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Paste a link",
+      "shortName": "Paste",
+      "url": "/",
+      "iconUrl": "https://save47.com/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://save47.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": { "enabled": false },
+    "locationDelegation": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://save47.com/",
+  "minSdkVersion": 23,
+  "orientation": "default",
+  "fingerprints": []
+}
