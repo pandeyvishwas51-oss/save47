@@ -18,6 +18,7 @@
   },
   "packageManager": "pnpm@9.0.0",
   "devDependencies": {
+    "sharp": "^0.34.5",
     "typescript": "^5.4.0"
   }
 }

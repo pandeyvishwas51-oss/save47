@@ -1,6 +1,6 @@
 {
-  "packageId": "app.save47.twa",
-  "host": "save47.com",
+  "packageId": "com.save47.app",
+  "host": "save47.vercel.app",
   "name": "Save47",
   "launcherName": "Save47",
   "display": "standalone",
@@ -12,8 +12,8 @@
   "backgroundColor": "#09090b",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://save47.com/icons/icon-512.png",
-  "maskableIconUrl": "https://save47.com/icons/icon-512-maskable.png",
+  "iconUrl": "https://save47.vercel.app/icons/icon-512.png",
+  "maskableIconUrl": "https://save47.vercel.app/icons/icon-512-maskable.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./android.keystore",
@@ -26,11 +26,11 @@
       "name": "Paste a link",
       "shortName": "Paste",
       "url": "/",
-      "iconUrl": "https://save47.com/icons/icon-192.png"
+      "iconUrl": "https://save47.vercel.app/icons/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://save47.com/manifest.json",
+  "webManifestUrl": "https://save47.vercel.app/manifest.json",
   "fallbackType": "customtabs",
   "features": {
     "playBilling": { "enabled": false },
@@ -40,7 +40,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://save47.com/",
+  "fullScopeUrl": "https://save47.vercel.app/",
   "minSdkVersion": 23,
   "orientation": "default",
   "fingerprints": []
