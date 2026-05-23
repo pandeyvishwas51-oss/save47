@@ -21,14 +21,7 @@
   },
   "appVersionName": "1.0.0",
   "appVersionCode": 1,
-  "shortcuts": [
-    {
-      "name": "Paste a link",
-      "shortName": "Paste",
-      "url": "/",
-      "iconUrl": "https://save47.vercel.app/icons/icon-192.png"
-    }
-  ],
+  "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://save47.vercel.app/manifest.json",
   "fallbackType": "customtabs",

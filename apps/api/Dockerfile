@@ -7,14 +7,15 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o 
 
 WORKDIR /app
 
-# Install pnpm
 RUN npm install -g pnpm@9
 
-# Workspace files (only api package — copied flat for a leaner image)
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace metadata so pnpm understands the structure.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 
-RUN pnpm install --filter @save47/api... --frozen-lockfile || pnpm install --filter @save47/api...
+# Install only the API's dependencies. Use --no-frozen-lockfile as a fallback
+# in case the lockfile was generated with newer/different optional deps.
+RUN pnpm install --filter @save47/api... --frozen-lockfile=false
 
 COPY apps/api ./apps/api
 
