@@ -5,20 +5,49 @@ import { DownloadError, type RawYtdlpMetadata } from '../types.js';
 
 const YTDLP_BINARY = process.env.YTDLP_PATH || 'yt-dlp';
 
+// Optional cookie jar file. When set, yt-dlp uses it to authenticate
+// requests — this is the only reliable way to bypass YouTube's "Sign in
+// to confirm you're not a bot" gate from a datacenter IP.
+//
+// Generate a cookies.txt with the "Get cookies.txt LOCALLY" extension on
+// any logged-in YouTube tab, then mount it on the server and set
+// YTDLP_COOKIES_FILE to the absolute path.
+const COOKIES_FILE = process.env.YTDLP_COOKIES_FILE;
+
+// Per-extractor args. The android/ios/tv clients work around YouTube's
+// web-based bot detection in many cases, no cookies required.
+function youtubeExtractorArgs(): string[] {
+  // The order matters — yt-dlp tries clients left-to-right.
+  // android_creator + ios + tv have the highest current success rate from
+  // datacenter IPs as of late 2024.
+  const clients = process.env.YTDLP_YT_CLIENTS || 'android,ios,tv,web';
+  return ['--extractor-args', `youtube:player_client=${clients}`];
+}
+
+function commonArgs(url: string): string[] {
+  const args = [
+    '--no-playlist',
+    '--no-warnings',
+    '--user-agent',
+    randomUserAgent(),
+    '--add-header',
+    'Accept-Language:en-US,en;q=0.9',
+    '--geo-bypass',
+    ...youtubeExtractorArgs(),
+  ];
+  if (COOKIES_FILE) {
+    args.push('--cookies', COOKIES_FILE);
+  }
+  // Slight throttle helps avoid 429s on high-volume probes.
+  args.push('--retries', '3', '--fragment-retries', '3');
+  return args;
+}
+
 // Probe a URL — returns parsed metadata JSON.
 export async function probeUrl(url: string): Promise<RawYtdlpMetadata> {
   return new Promise((resolve, reject) => {
-    const proc = spawn(YTDLP_BINARY, [
-      '--dump-json',
-      '--no-download',
-      '--no-playlist',
-      '--no-warnings',
-      '--user-agent',
-      randomUserAgent(),
-      '--add-header',
-      'Accept-Language:en-US,en;q=0.9',
-      url,
-    ]);
+    const args = ['--dump-json', '--no-download', ...commonArgs(url), url];
+    const proc = spawn(YTDLP_BINARY, args);
 
     let stdout = '';
     let stderr = '';
@@ -33,7 +62,7 @@ export async function probeUrl(url: string): Promise<RawYtdlpMetadata> {
     const timeout = setTimeout(() => {
       proc.kill('SIGTERM');
       reject(new DownloadError('default', 'Metadata fetch timed out', 504));
-    }, 20000);
+    }, 30000);
 
     proc.on('error', (err) => {
       clearTimeout(timeout);
@@ -57,8 +86,6 @@ export async function probeUrl(url: string): Promise<RawYtdlpMetadata> {
         return;
       }
       try {
-        // yt-dlp may emit one JSON object per line for playlists. We use --no-playlist
-        // so only one line is expected, but be safe and take the first parseable line.
         const trimmed = stdout.trim();
         const firstLine = trimmed.split('\n').find((l) => l.startsWith('{')) ?? trimmed;
         resolve(JSON.parse(firstLine) as RawYtdlpMetadata);
@@ -78,20 +105,7 @@ export interface StreamHandle {
 
 // Stream a video — returns a Readable stream that emits raw media bytes.
 export function streamVideo(url: string, formatSelector: string, audioOnly = false): StreamHandle {
-  const baseArgs = [
-    '--output',
-    '-',
-    '--no-playlist',
-    '--no-warnings',
-    '--user-agent',
-    randomUserAgent(),
-    '--add-header',
-    'Accept-Language:en-US,en;q=0.9',
-    '--retries',
-    '3',
-    '--fragment-retries',
-    '3',
-  ];
+  const baseArgs = ['--output', '-', ...commonArgs(url)];
 
   const args = audioOnly
     ? [
@@ -134,8 +148,17 @@ export function streamVideo(url: string, formatSelector: string, audioOnly = fal
 export function parseYtdlpError(stderr: string): DownloadError {
   const lower = stderr.toLowerCase();
 
-  if (lower.includes('login required') || lower.includes('sign in') || lower.includes('login')) {
-    return new DownloadError('instagram_login_required', 'Login required', 403);
+  if (
+    lower.includes('confirm you') ||
+    lower.includes('sign in to confirm') ||
+    lower.includes('login required') ||
+    lower.includes('sign in')
+  ) {
+    return new DownloadError(
+      'instagram_login_required',
+      'Login required (YouTube bot check). The server needs cookies to bypass this.',
+      403
+    );
   }
   if (lower.includes('429') || lower.includes('too many requests') || lower.includes('rate-limit')) {
     return new DownloadError('youtube_rate_limited', 'Rate limited by source', 429);
