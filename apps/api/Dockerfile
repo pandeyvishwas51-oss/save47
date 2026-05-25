@@ -24,4 +24,10 @@ RUN pnpm build
 
 ENV NODE_ENV=production
 EXPOSE 4000
-CMD ["node", "dist/index.js"]
+
+# Entrypoint script: decodes cookies from YTDLP_COOKIES_B64 env var if set,
+# then starts the Node server.
+COPY apps/api/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

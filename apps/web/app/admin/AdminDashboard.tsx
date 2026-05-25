@@ -80,7 +80,36 @@ export function AdminDashboard() {
 }
 
 function LoginCard({ onSubmit }: { onSubmit: (token: string) => void }) {
-  const [token, setToken] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Login failed');
+        return;
+      }
+      if (data.token) {
+        onSubmit(data.token);
+      }
+    } catch (err) {
+      setError('Network error — is the API running?');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-md pt-12">
       <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-8">
@@ -89,28 +118,37 @@ function LoginCard({ onSubmit }: { onSubmit: (token: string) => void }) {
           <h1 className="text-xl font-semibold">Admin login</h1>
         </div>
         <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-          Paste the <code className="rounded bg-[var(--background)] px-1.5 py-0.5 text-xs">ADMIN_TOKEN</code>{' '}
-          configured on the API server.
+          Sign in with your admin email and password.
         </p>
-        <form
-          className="mt-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (token.trim()) onSubmit(token.trim());
-          }}
-        >
+        <form className="mt-5 space-y-3" onSubmit={handleLogin}>
           <input
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="ADMIN_TOKEN"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            autoComplete="email"
             className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-3 py-2.5 text-sm focus:border-[var(--accent)] focus:outline-none"
           />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
+            className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-3 py-2.5 text-sm focus:border-[var(--accent)] focus:outline-none"
+          />
+          {error && (
+            <div className="flex items-center gap-2 rounded-xl border border-[var(--error)]/40 bg-[var(--error)]/10 px-3 py-2 text-xs text-[var(--error)]">
+              <AlertCircle size={14} />
+              {error}
+            </div>
+          )}
           <button
             type="submit"
-            disabled={!token.trim()}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
+            disabled={!email.trim() || !password || loading}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[var(--accent-hover)] disabled:opacity-50"
           >
+            {loading ? <Loader2 size={14} className="animate-spin" /> : null}
             Sign in
           </button>
         </form>
