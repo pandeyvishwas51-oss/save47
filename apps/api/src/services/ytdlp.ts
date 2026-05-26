@@ -107,19 +107,34 @@ export interface StreamHandle {
 export function streamVideo(url: string, formatSelector: string, audioOnly = false): StreamHandle {
   const baseArgs = ['--output', '-', ...commonArgs(url)];
 
-  const args = audioOnly
-    ? [
-        '--format',
-        'bestaudio/best',
-        '--extract-audio',
-        '--audio-format',
-        'mp3',
-        '--audio-quality',
-        '0',
-        ...baseArgs,
-        url,
-      ]
-    : ['--format', formatSelector, ...baseArgs, url];
+  let args: string[];
+  if (audioOnly) {
+    args = [
+      '--format',
+      'bestaudio/best',
+      '--extract-audio',
+      '--audio-format',
+      'mp3',
+      '--audio-quality',
+      '0',
+      ...baseArgs,
+      url,
+    ];
+  } else {
+    args = [
+      '--format',
+      formatSelector,
+      // When yt-dlp picks separate video+audio and needs to merge, tell it
+      // to produce MP4 container. Note: piping merged output to stdout only
+      // works reliably with ffmpeg's fragmented MP4 (frag_keyframe) mode.
+      '--merge-output-format',
+      'mp4',
+      '--ppa',
+      'Merger+ffmpeg_o:-movflags frag_keyframe+empty_moov -strict -2',
+      ...baseArgs,
+      url,
+    ];
+  }
 
   const proc = spawn(YTDLP_BINARY, args);
   const stderrBuffer = { value: '' };

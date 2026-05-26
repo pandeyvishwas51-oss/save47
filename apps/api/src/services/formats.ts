@@ -117,6 +117,13 @@ export function buildMediaInfo(raw: RawYtdlpMetadata, originalUrl: string): Medi
 }
 
 // Map a (formatId, quality) pair to a yt-dlp -f format selector string.
+//
+// IMPORTANT: When streaming to stdout (--output -), yt-dlp cannot merge
+// separate video+audio streams into a playable file because ffmpeg needs
+// seekable output for proper MP4 muxing. The selector MUST prefer
+// already-muxed formats (best[ext=mp4]) and only fall back to separate
+// streams as a last resort. For separate streams we rely on the
+// --merge-output-format mp4 flag + ffmpeg's pipe-friendly movflags.
 export function buildFormatSelector(formatId: string, quality?: string): {
   selector: string;
   audioOnly: boolean;
@@ -126,8 +133,10 @@ export function buildFormatSelector(formatId: string, quality?: string): {
     return { selector: 'bestaudio/best', audioOnly: true, ext: 'mp3' };
   }
   if (formatId === 'best') {
+    // Prefer single-file muxed formats first (works with stdout piping).
+    // Fall back to separate streams only if no muxed format exists.
     return {
-      selector: 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+      selector: 'best[ext=mp4]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
       audioOnly: false,
       ext: 'mp4',
     };
@@ -136,14 +145,14 @@ export function buildFormatSelector(formatId: string, quality?: string): {
   if (m) {
     const h = m[1];
     return {
-      selector: `bestvideo[height<=${h}][ext=mp4]+bestaudio[ext=m4a]/best[height<=${h}][ext=mp4]/best[height<=${h}]`,
+      selector: `best[height<=${h}][ext=mp4]/bestvideo[height<=${h}][ext=mp4]+bestaudio[ext=m4a]/best[height<=${h}]/bestvideo[height<=${h}]+bestaudio/best`,
       audioOnly: false,
       ext: 'mp4',
     };
   }
-  // Fallback: treat unknown formatId as best
+  // Fallback: prefer muxed
   return {
-    selector: 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+    selector: 'best[ext=mp4]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
     audioOnly: false,
     ext: 'mp4',
   };
