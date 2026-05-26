@@ -99,22 +99,34 @@ export async function downloadRoutes(app: FastifyInstance) {
 
     const handle = streamVideo(url, selector, audioOnly);
 
-    reply.raw.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${encodeURIComponent(filename)}"; filename*=UTF-8''${encodeURIComponent(filename)}`
-    );
-    reply.raw.setHeader(
-      'Content-Type',
-      audioOnly ? 'audio/mpeg' : ext === 'webm' ? 'video/webm' : 'video/mp4'
-    );
-    reply.raw.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    reply.raw.setHeader('X-Accel-Buffering', 'no');
-
+    // Defer sending response headers until yt-dlp produces the first byte.
+    // If yt-dlp fails before any output (e.g. login-required, rate-limit),
+    // we can still return a clean JSON error via fastify's reply. Once we
+    // start streaming, the raw socket is owned by us and any further error
+    // can only be signaled by closing the connection early.
     let bytesWritten = 0;
+    let headersSent = false;
+    const sendHeaders = () => {
+      if (headersSent) return;
+      headersSent = true;
+      reply.raw.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${encodeURIComponent(filename)}"; filename*=UTF-8''${encodeURIComponent(filename)}`
+      );
+      reply.raw.setHeader(
+        'Content-Type',
+        audioOnly ? 'audio/mpeg' : ext === 'webm' ? 'video/webm' : 'video/mp4'
+      );
+      reply.raw.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      reply.raw.setHeader('X-Accel-Buffering', 'no');
+      reply.hijack();
+    };
+
     handle.stream.on('data', (chunk: Buffer) => {
+      if (!headersSent) sendHeaders();
       bytesWritten += chunk.length;
+      reply.raw.write(chunk);
     });
-    handle.stream.pipe(reply.raw);
 
     req.raw.on('close', () => {
       if (!reply.raw.writableEnded) {
@@ -124,22 +136,22 @@ export async function downloadRoutes(app: FastifyInstance) {
 
     return new Promise<void>((resolve, reject) => {
       handle.process.on('error', (err) => {
-        if (bytesWritten === 0) {
+        if (!headersSent) {
           reply.code(500).send({ code: 'default', message: err.message });
-        } else {
+        } else if (!reply.raw.writableEnded) {
           reply.raw.end();
         }
         reject(err);
       });
       handle.process.on('close', (code) => {
-        if (code !== 0 && bytesWritten === 0) {
+        if (code !== 0 && !headersSent) {
           const e = parseYtdlpError(handle.stderrBuffer.value);
           reply.code(e.status).send({ code: e.code, message: e.message });
           void record({ kind: 'errors', code: e.code, ip, via, url, platform });
           resolve();
           return;
         }
-        if (!reply.raw.writableEnded) reply.raw.end();
+        if (headersSent && !reply.raw.writableEnded) reply.raw.end();
         void record({ kind: 'downloads', platform, ip, via, url });
         resolve();
       });
