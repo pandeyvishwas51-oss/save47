@@ -1,15 +1,24 @@
 import type { Metadata } from 'next';
 import { ApiDocsView } from './ApiDocsView';
 import { JsonLd, breadcrumbSchema, faqSchema } from '@/components/seo/StructuredData';
+import { pageMetadata, SITE } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Save47 API & CLI — Bulk download videos from your terminal',
   description:
     'REST API and CLI for programmatic video downloads from YouTube, Instagram, TikTok and 1000+ sites. Free tier, bulk endpoint, no signup beyond an email.',
-  alternates: { canonical: '/api' },
-};
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  path: '/api',
+  keywords: [
+    'video downloader api',
+    'youtube api downloader',
+    'tiktok api',
+    'instagram api downloader',
+    'video download cli',
+    'bulk video downloader',
+    'yt-dlp api',
+    'video downloader rest api',
+  ],
+});
 
 const API_FAQ = [
   {
@@ -35,8 +44,8 @@ export default function ApiPage() {
     <>
       <JsonLd
         data={breadcrumbSchema([
-          { name: 'Home', url: SITE_URL },
-          { name: 'API', url: `${SITE_URL}/api` },
+          { name: 'Home', url: SITE.url },
+          { name: 'API', url: `${SITE.url}/api` },
         ])}
       />
       <JsonLd data={faqSchema(API_FAQ)} />

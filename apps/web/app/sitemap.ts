@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const core: Array<{ path: string; priority: number; changeFrequency: 'daily' | 'weekly' | 'monthly' }> = [
     { path: '/', priority: 1, changeFrequency: 'daily' },
+    { path: '/all-platforms', priority: 0.95, changeFrequency: 'weekly' },
     { path: '/api', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
     { path: '/download/apk', priority: 0.9, changeFrequency: 'weekly' },
@@ -27,6 +28,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'reddit-video-downloader',
     'soundcloud-downloader',
     'pinterest-video-downloader',
+    'vimeo-downloader',
+    'twitch-clip-downloader',
+    'dailymotion-downloader',
   ].map((slug) => ({
     path: `/${slug}`,
     priority: 0.85,

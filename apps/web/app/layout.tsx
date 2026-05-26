@@ -13,10 +13,12 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'https://save47-api-production.up.railway.app';
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: 'Save47 — Free Video Downloader. No Ads. No Login.',
+    default: 'Save47 — Free Video Downloader for YouTube, Instagram, TikTok',
     template: '%s | Save47',
   },
   description: SITE.defaultDescription,
@@ -24,15 +26,27 @@ export const metadata: Metadata = {
     'video downloader',
     'youtube downloader',
     'youtube to mp3',
+    'youtube to mp4',
     'instagram reel downloader',
+    'instagram video downloader',
     'tiktok downloader',
+    'tiktok no watermark',
     'twitter video downloader',
+    'x video downloader',
     'reddit video downloader',
+    'facebook video downloader',
     'soundcloud downloader',
+    'pinterest video downloader',
+    'vimeo downloader',
+    'twitch clip downloader',
     'free video download',
     'no ads downloader',
     'mp4 downloader',
     'mp3 converter',
+    'online video downloader',
+    'save online videos',
+    '4k video downloader',
+    'hd video downloader',
   ],
   applicationName: SITE.name,
   authors: [{ name: 'Save47', url: SITE.url }],
@@ -49,7 +63,7 @@ export const metadata: Metadata = {
       'Download videos from YouTube, Instagram, TikTok and 1000+ sites. No ads, no login. Web, Android, and CLI.',
     locale: 'en_US',
     url: SITE.url,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Save47' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Save47 — Free Video Downloader' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -57,6 +71,7 @@ export const metadata: Metadata = {
     description: 'No ads. No login. 1000+ sites supported.',
     site: SITE.twitter,
     creator: SITE.twitter,
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
@@ -84,6 +99,10 @@ export const metadata: Metadata = {
     title: 'Save47',
   },
   category: 'technology',
+  verification: {
+    // Will be filled in once Search Console is set up; safe placeholders.
+    // google: 'GOOGLE_VERIFICATION_TOKEN',
+  },
 };
 
 export const viewport: Viewport = {
@@ -100,8 +119,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/logo-mark.svg" type="image/svg+xml" />
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'} />
-        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'} />
+        <link rel="preconnect" href={API_HOST} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={API_HOST} />
         <meta name="theme-color" content="#6366f1" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

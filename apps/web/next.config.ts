@@ -2,7 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Improves Core Web Vitals + reduces transferred bytes for SEO ranking.
+  compress: true,
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24, // 24h
     remotePatterns: [
       { protocol: 'https', hostname: 'i.ytimg.com' }, // YouTube
       { protocol: 'https', hostname: '**.ytimg.com' },
@@ -32,6 +38,16 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
+      },
+      {
+        // Long cache for sitemap + robots — Google re-fetches these on its own schedule.
+        source: '/(sitemap.xml|robots.txt)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' }],
+      },
+      {
+        // 1 year immutable cache for OG images.
+        source: '/og',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
     ];
   },

@@ -82,6 +82,13 @@ export async function probeUrl(url: string): Promise<RawYtdlpMetadata> {
     proc.on('close', (code) => {
       clearTimeout(timeout);
       if (code !== 0) {
+        // Surface yt-dlp stderr to the server log so the operator can see
+        // why a probe failed (cookie-expired, geo-blocked, etc.). The user
+        // still gets a clean error code via parseYtdlpError().
+        if (stderr) {
+          // eslint-disable-next-line no-console
+          console.error(`[ytdlp probe failed] url=${url} stderr=${stderr.slice(-1500)}`);
+        }
         reject(parseYtdlpError(stderr));
         return;
       }

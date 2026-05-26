@@ -1,19 +1,25 @@
 import type { Metadata } from 'next';
 import { PlatformLandingPage } from '@/components/seo/PlatformLandingPage';
+import { pageMetadata, SITE } from '@/lib/seo';
 
-const PAGE_URL = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reddit-video-downloader`;
+const PATH = '/reddit-video-downloader';
 
-export const metadata: Metadata = {
-  title: 'Reddit Video Downloader with Audio',
+export const metadata: Metadata = pageMetadata({
+  title: 'Reddit Video Downloader with Audio — Free MP4',
   description:
-    'Download Reddit videos with audio merged automatically. Works for v.redd.it links, free, no login.',
-  alternates: { canonical: PAGE_URL },
-  openGraph: {
-    title: 'Reddit Video Downloader with Audio',
-    description: 'Download Reddit videos with sound. Free.',
-    url: PAGE_URL,
-  },
-};
+    'Download Reddit videos with sound. Save47 merges Reddit\'s separate video and audio streams automatically. Works for v.redd.it links, free, no login.',
+  path: PATH,
+  keywords: [
+    'reddit video downloader',
+    'reddit downloader with audio',
+    'download reddit videos',
+    'v.redd.it downloader',
+    'reddit mp4',
+    'reddit video with sound',
+    'save reddit video',
+    'reddit gif downloader',
+  ],
+});
 
 export default function Page() {
   return (
@@ -21,34 +27,42 @@ export default function Page() {
       platformId="reddit"
       platformName="Reddit"
       h1="Reddit Video Downloader (with audio)"
-      intro="Reddit serves video and audio in separate streams. Save47 merges them for you so the file you save has sound."
-      pageUrl={PAGE_URL}
+      intro="Reddit hosts video and audio as separate streams which is why most other downloaders give you silent files. Save47 merges them automatically server-side using ffmpeg, so the MP4 you save has full sound."
+      pageUrl={`${SITE.url}${PATH}`}
       steps={[
         'Copy the Reddit post link from the comments page or the share menu.',
-        'Paste it above.',
-        'Click Download. Save47 automatically merges video and audio into one MP4.',
+        'Paste it into Save47.',
+        'Click Download. Save47 merges video + audio into a single MP4 with sound.',
       ]}
-      formats={['MP4 HD with audio', 'MP4 SD with audio', 'MP3 Audio only']}
+      formats={['MP4 HD with audio', 'MP4 SD with audio', 'MP3 audio only']}
       faqs={[
         {
           q: 'Why do other Reddit downloaders give me silent videos?',
-          a: 'Reddit hosts video and audio as separate files. Save47 merges them server-side using ffmpeg before the download starts.',
+          a: 'Reddit hosts the video and audio as two separate files on its v.redd.it CDN. Most downloaders only fetch the video stream and skip audio. Save47 fetches both and merges them server-side using ffmpeg before the file is sent to you.',
         },
         {
-          q: 'Does it work with v.redd.it links?',
-          a: 'Yes. Both reddit.com/r/... and v.redd.it links are supported.',
+          q: 'Does it work with v.redd.it short links?',
+          a: 'Yes. Both reddit.com/r/... post URLs and standalone v.redd.it links are supported.',
         },
         {
           q: 'Can I download NSFW Reddit videos?',
-          a: 'Public NSFW posts that do not require login are supported.',
+          a: 'Yes for public NSFW posts that do not require login. Quarantined or login-gated NSFW content is not supported.',
         },
         {
           q: 'Are crossposts supported?',
-          a: 'Yes. Save47 follows the crosspost reference to the original media.',
+          a: 'Yes. Save47 follows the crosspost reference back to the original media so you get the full quality.',
         },
         {
-          q: 'Is it free?',
-          a: 'Yes. No ads, no signups, no daily limits for personal use.',
+          q: 'Can I extract just the audio?',
+          a: 'Yes — pick MP3 in the format picker. Save47 will extract the audio stream at the highest available bitrate.',
+        },
+        {
+          q: 'Is it really free?',
+          a: 'Yes. No ads, no signups, no daily caps. The Reddit downloader is free for personal use.',
+        },
+        {
+          q: 'Does it work on iPhone?',
+          a: 'Yes. Open the Reddit post in Safari, tap Share → Copy Link, then paste into Save47. The MP4 saves to Files → Downloads.',
         },
       ]}
     />

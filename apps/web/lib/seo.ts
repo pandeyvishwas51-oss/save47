@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+// Always default to the production domain so that pages built with no
+// env var (e.g. CI without secrets) still emit correct canonical/OG URLs.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://save47.com';
 const SITE_NAME = 'Save47';
 
@@ -8,7 +10,8 @@ export const SITE = {
   name: SITE_NAME,
   defaultDescription:
     'Download videos from YouTube, Instagram, TikTok, Facebook, Twitter, Reddit, SoundCloud and 1000+ sites. Free, no ads, no login. Web, Android, and CLI.',
-  twitter: '@save47app',
+  twitter: '@save47',
+  github: 'https://github.com/pandeyvishwas51-oss/save47',
   domain: SITE_URL.replace(/^https?:\/\//, ''),
 };
 
@@ -63,9 +66,10 @@ export function siteWideSchema() {
       name: SITE.name,
       url: SITE.url,
       description: SITE.defaultDescription,
+      inLanguage: 'en-US',
       potentialAction: {
         '@type': 'SearchAction',
-        target: { '@type': 'EntryPoint', urlTemplate: `${SITE.url}/download?url={url}` },
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE.url}/?url={url}` },
         'query-input': 'required name=url',
       },
     },
@@ -74,8 +78,16 @@ export function siteWideSchema() {
       '@type': 'Organization',
       name: SITE.name,
       url: SITE.url,
-      logo: `${SITE.url}/logo.svg`,
-      sameAs: [`https://twitter.com/${SITE.twitter.replace('@', '')}`, `https://github.com/${SITE.name.toLowerCase()}`],
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE.url}/icons/icon-512.png`,
+        width: 512,
+        height: 512,
+      },
+      sameAs: [
+        `https://twitter.com/${SITE.twitter.replace('@', '')}`,
+        SITE.github,
+      ],
     },
   ];
 }

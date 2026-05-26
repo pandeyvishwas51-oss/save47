@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Smartphone, Terminal } from 'lucide-react';
+import { ArrowRight, Smartphone, Terminal } from 'lucide-react';
 import { UrlInput } from '@/components/downloader/UrlInput';
 import { FaqAccordion } from './FaqAccordion';
 import {
@@ -10,8 +10,7 @@ import {
   softwareApplicationSchema,
 } from './StructuredData';
 import { platformColor } from '@/lib/platforms';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+import { SITE } from '@/lib/seo';
 
 export interface PlatformLandingPageProps {
   platformId: string;
@@ -24,6 +23,70 @@ export interface PlatformLandingPageProps {
   pageUrl: string;
 }
 
+interface RelatedLink {
+  href: string;
+  name: string;
+  desc: string;
+}
+
+const RELATED_BY_PLATFORM: Record<string, RelatedLink[]> = {
+  youtube: [
+    { href: '/youtube-to-mp3', name: 'YouTube to MP3', desc: 'High-quality audio' },
+    { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical Shorts MP4' },
+    { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'Save reels free' },
+  ],
+  instagram: [
+    { href: '/instagram-video-downloader', name: 'Instagram Videos', desc: 'Posts & IGTV' },
+    { href: '/tiktok-downloader', name: 'TikTok', desc: 'No watermark MP4' },
+    { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical clips' },
+  ],
+  tiktok: [
+    { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'Save reels free' },
+    { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical Shorts' },
+    { href: '/twitter-video-downloader', name: 'Twitter / X', desc: 'Tweet videos' },
+  ],
+  facebook: [
+    { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'Save reels free' },
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+    { href: '/twitter-video-downloader', name: 'Twitter / X', desc: 'Tweet videos' },
+  ],
+  twitter: [
+    { href: '/reddit-video-downloader', name: 'Reddit', desc: 'Video + audio' },
+    { href: '/tiktok-downloader', name: 'TikTok', desc: 'No watermark' },
+    { href: '/instagram-video-downloader', name: 'Instagram Videos', desc: 'Posts & IGTV' },
+  ],
+  reddit: [
+    { href: '/twitter-video-downloader', name: 'Twitter / X', desc: 'Videos & GIFs' },
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+    { href: '/tiktok-downloader', name: 'TikTok', desc: 'No watermark' },
+  ],
+  soundcloud: [
+    { href: '/youtube-to-mp3', name: 'YouTube to MP3', desc: 'Audio from YT' },
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos & music' },
+    { href: '/twitter-video-downloader', name: 'Twitter / X', desc: 'Tweet audio' },
+  ],
+  pinterest: [
+    { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'Save reels' },
+    { href: '/tiktok-downloader', name: 'TikTok', desc: 'No watermark' },
+    { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical clips' },
+  ],
+  vimeo: [
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+    { href: '/dailymotion-downloader', name: 'Dailymotion', desc: 'HD MP4' },
+    { href: '/twitch-clip-downloader', name: 'Twitch', desc: 'Clips & VODs' },
+  ],
+  twitch: [
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+    { href: '/vimeo-downloader', name: 'Vimeo', desc: 'HD MP4' },
+    { href: '/dailymotion-downloader', name: 'Dailymotion', desc: 'HD MP4' },
+  ],
+  dailymotion: [
+    { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+    { href: '/vimeo-downloader', name: 'Vimeo', desc: 'Up to 4K' },
+    { href: '/twitch-clip-downloader', name: 'Twitch', desc: 'Clips & VODs' },
+  ],
+};
+
 export function PlatformLandingPage({
   platformId,
   platformName,
@@ -35,6 +98,13 @@ export function PlatformLandingPage({
   pageUrl,
 }: PlatformLandingPageProps) {
   const accent = platformColor(platformId);
+  const related =
+    RELATED_BY_PLATFORM[platformId] ?? [
+      { href: '/youtube-downloader', name: 'YouTube', desc: 'Videos in 4K' },
+      { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'Save reels' },
+      { href: '/tiktok-downloader', name: 'TikTok', desc: 'No watermark' },
+    ];
+
   return (
     <>
       <JsonLd
@@ -54,7 +124,8 @@ export function PlatformLandingPage({
       />
       <JsonLd
         data={breadcrumbSchema([
-          { name: 'Home', url: SITE_URL },
+          { name: 'Home', url: SITE.url },
+          { name: 'All Platforms', url: `${SITE.url}/all-platforms` },
           { name: platformName, url: pageUrl },
         ])}
       />
@@ -142,6 +213,40 @@ export function PlatformLandingPage({
             <p className="text-sm font-medium">{label}</p>
           </div>
         ))}
+      </section>
+
+      {/* Related downloaders — internal linking for SEO + helps users find more tools */}
+      <section className="mx-auto mt-16 max-w-3xl">
+        <h2 className="text-xl font-semibold">Other downloaders</h2>
+        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          Save47 supports 1,000+ sites. Here are a few related to {platformName}:
+        </p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          {related.map((r) => (
+            <Link
+              key={r.href}
+              href={r.href}
+              className="group flex items-center justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4 transition hover:border-[var(--accent)]"
+            >
+              <div>
+                <div className="text-sm font-semibold">{r.name}</div>
+                <div className="mt-0.5 text-xs text-[var(--muted-foreground)]">{r.desc}</div>
+              </div>
+              <ArrowRight
+                size={14}
+                className="text-[var(--muted-foreground)] transition group-hover:text-[var(--accent)] group-hover:translate-x-1"
+              />
+            </Link>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <Link
+            href="/all-platforms"
+            className="text-sm text-[var(--muted-foreground)] underline-offset-4 hover:text-[var(--foreground)] hover:underline"
+          >
+            See all 1,000+ supported platforms →
+          </Link>
+        </div>
       </section>
     </>
   );

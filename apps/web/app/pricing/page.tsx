@@ -1,15 +1,21 @@
 import type { Metadata } from 'next';
 import { PricingView } from './PricingView';
 import { JsonLd, breadcrumbSchema, faqSchema } from '@/components/seo/StructuredData';
+import { pageMetadata, SITE } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Pricing — Save47 API',
+export const metadata: Metadata = pageMetadata({
+  title: 'Pricing — Save47 API & CLI',
   description:
-    'Simple pricing for the Save47 API. Free tier with 200 requests/month. Pro and Unlimited plans for high-volume users.',
-  alternates: { canonical: '/pricing' },
-};
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    'Simple pricing for the Save47 API. Free tier with 200 requests/month, Pro at 10K/month, Unlimited at 1M/month. The web downloader and Android APK are free forever.',
+  path: '/pricing',
+  keywords: [
+    'save47 pricing',
+    'video downloader api pricing',
+    'youtube api downloader pricing',
+    'bulk video download api',
+    'video downloader pro plan',
+  ],
+});
 
 const PRICING_FAQ = [
   {
@@ -35,8 +41,8 @@ export default function PricingPage() {
     <>
       <JsonLd
         data={breadcrumbSchema([
-          { name: 'Home', url: SITE_URL },
-          { name: 'Pricing', url: `${SITE_URL}/pricing` },
+          { name: 'Home', url: SITE.url },
+          { name: 'Pricing', url: `${SITE.url}/pricing` },
         ])}
       />
       <JsonLd data={faqSchema(PRICING_FAQ)} />

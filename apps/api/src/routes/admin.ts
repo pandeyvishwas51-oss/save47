@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { promises as fs } from 'fs';
 import {
   requireAdmin,
   checkAdminCredentials,
@@ -98,6 +99,43 @@ export async function adminRoutes(app: FastifyInstance) {
       return { code: 'not_found', message: 'Key not found.' };
     }
     return { ok: true };
+  });
+
+  // Cookie status diagnostic — admin-protected so it doesn't leak.
+  // Lets the operator verify YTDLP_COOKIES_FILE is present and contains
+  // useful YouTube/Instagram entries, without exposing the cookies themselves.
+  app.get('/admin/cookies-status', async (_req, reply) => {
+    const file = process.env.YTDLP_COOKIES_FILE;
+    if (!file) {
+      return {
+        configured: false,
+        message: 'YTDLP_COOKIES_FILE is not set. Set YTDLP_COOKIES_B64 or YTDLP_COOKIES env var on the server.',
+      };
+    }
+    try {
+      const stat = await fs.stat(file);
+      const content = await fs.readFile(file, 'utf8');
+      const lines = content.split('\n');
+      const youtube = lines.filter((l) => l.includes('youtube.com')).length;
+      const instagram = lines.filter((l) => l.includes('instagram.com')).length;
+      const tiktok = lines.filter((l) => l.includes('tiktok.com')).length;
+      const hasHeader = lines[0]?.includes('Netscape HTTP Cookie File') ?? false;
+      return {
+        configured: true,
+        path: file,
+        sizeBytes: stat.size,
+        totalLines: lines.length,
+        netscapeHeader: hasHeader,
+        domains: { youtube, instagram, tiktok },
+      };
+    } catch (err) {
+      reply.code(500);
+      return {
+        configured: true,
+        path: file,
+        error: (err as Error).message,
+      };
+    }
   });
 
   app.get<{ Params: { id: string } }>('/admin/keys/:id/usage', async (req) => {

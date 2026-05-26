@@ -14,15 +14,20 @@ import {
 import { UrlInput } from '@/components/downloader/UrlInput';
 import { PlatformGrid } from '@/components/PlatformGrid';
 import { FaqAccordion } from '@/components/seo/FaqAccordion';
-import { JsonLd, faqSchema, softwareApplicationSchema } from '@/components/seo/StructuredData';
+import {
+  JsonLd,
+  faqSchema,
+  softwareApplicationSchema,
+} from '@/components/seo/StructuredData';
 import { HOMEPAGE_FAQ } from '@/lib/faq';
+import { SITE } from '@/lib/seo';
 import { ShareTargetHandler } from './share-target-handler';
 
 interface HomePageProps {
   searchParams: Promise<{ url?: string; text?: string; title?: string }>;
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const SITE_URL = SITE.url;
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
@@ -214,6 +219,46 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       <PlatformGrid />
+
+      {/* POPULAR DOWNLOADERS — internal links to platform-specific landing pages */}
+      <section className="mx-auto mt-24 max-w-5xl">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Popular downloaders
+          </h2>
+          <Link
+            href="/all-platforms"
+            className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          >
+            View all →
+          </Link>
+        </div>
+        <p className="mt-3 text-[var(--muted-foreground)]">
+          Dedicated guides for the most-used platforms.
+        </p>
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { href: '/youtube-downloader', name: 'YouTube Downloader', desc: 'MP4 4K, 1080p, 720p, 480p' },
+            { href: '/youtube-to-mp3', name: 'YouTube to MP3', desc: 'High-quality audio extraction' },
+            { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'No watermark, no login' },
+            { href: '/tiktok-downloader', name: 'TikTok Downloader', desc: 'Watermark-free MP4' },
+            { href: '/facebook-video-downloader', name: 'Facebook Video', desc: 'Public videos & Reels' },
+            { href: '/twitter-video-downloader', name: 'Twitter / X Video', desc: 'Videos and GIFs' },
+            { href: '/reddit-video-downloader', name: 'Reddit (with audio)', desc: 'Auto-merged sound' },
+            { href: '/soundcloud-downloader', name: 'SoundCloud to MP3', desc: 'Tracks and mixes' },
+            { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical MP4' },
+          ].map((p) => (
+            <Link
+              key={p.href}
+              href={p.href}
+              className="group rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-5 transition hover:border-[var(--accent)]"
+            >
+              <div className="font-semibold">{p.name}</div>
+              <div className="mt-1 text-xs text-[var(--muted-foreground)]">{p.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* FAQ */}
       <section className="mx-auto mt-24 max-w-3xl" id="faq">
