@@ -25,7 +25,16 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
     title: guide.title,
     description: guide.description,
     path: `/guides/${guide.slug}`,
-    keywords: [guide.title.toLowerCase(), 'tutorial', 'how-to'],
+    type: 'article',
+    publishedTime: guide.publishedAt,
+    modifiedTime: guide.updatedAt,
+    keywords: [
+      guide.title.toLowerCase(),
+      'tutorial',
+      'how-to',
+      'video downloader',
+      'save47',
+    ],
   });
 }
 
@@ -47,18 +56,29 @@ export default async function GuidePage({ params }: GuidePageProps) {
       <JsonLd
         data={{
           '@context': 'https://schema.org',
-          '@type': 'TechArticle',
+          '@type': 'Article',
           headline: guide.title,
           description: guide.description,
           datePublished: guide.publishedAt,
           dateModified: guide.updatedAt,
-          author: { '@type': 'Organization', name: guide.authorName },
+          author: {
+            '@type': 'Organization',
+            name: guide.authorName,
+            url: SITE.url,
+          },
           publisher: {
             '@type': 'Organization',
             name: SITE.name,
-            logo: { '@type': 'ImageObject', url: `${SITE.url}/logo.svg` },
+            logo: {
+              '@type': 'ImageObject',
+              url: `${SITE.url}/icons/icon-512.png`,
+              width: 512,
+              height: 512,
+            },
           },
           mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE.url}/guides/${guide.slug}` },
+          image: [`${SITE.url}/og?title=${encodeURIComponent(guide.title.slice(0, 80))}`],
+          inLanguage: 'en-US',
         }}
       />
 

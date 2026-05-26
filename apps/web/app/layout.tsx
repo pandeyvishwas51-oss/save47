@@ -100,8 +100,11 @@ export const metadata: Metadata = {
   },
   category: 'technology',
   verification: {
-    // Will be filled in once Search Console is set up; safe placeholders.
-    // google: 'GOOGLE_VERIFICATION_TOKEN',
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+    other: {
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_VERIFICATION ?? '',
+    },
   },
 };
 

@@ -1,0 +1,15 @@
+/* TEAM */
+Save47 Team
+Site: https://save47.com
+GitHub: https://github.com/pandeyvishwas51-oss/save47
+Twitter: @save47
+
+/* THANKS */
+yt-dlp contributors — the heroes who keep extraction working.
+The Cloudflare Turnstile team for keeping us bot-free without ads.
+
+/* SITE */
+Last update: 2026-05-26
+Standards: HTML5, CSS3, ES2024
+Components: Next.js 15, React 19, Tailwind CSS, Fastify
+Software: yt-dlp, ffmpeg, Redis, BullMQ

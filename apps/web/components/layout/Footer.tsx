@@ -24,6 +24,9 @@ const DOWNLOADERS: FooterLink[] = [
 
 const PRODUCT: FooterLink[] = [
   { href: '/all-platforms', label: 'All platforms' },
+  { href: '/online-video-downloader', label: 'Online downloader' },
+  { href: '/free-video-downloader', label: 'Free downloader' },
+  { href: '/hd-video-downloader', label: 'HD downloader' },
   { href: '/api', label: 'API & CLI' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/download/apk', label: 'Android APK' },

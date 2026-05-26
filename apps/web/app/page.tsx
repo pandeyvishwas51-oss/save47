@@ -29,6 +29,18 @@ interface HomePageProps {
 
 const SITE_URL = SITE.url;
 
+const POPULAR_DOWNLOADERS = [
+  { href: '/youtube-downloader', name: 'YouTube Downloader', desc: 'MP4 4K, 1080p, 720p, 480p' },
+  { href: '/youtube-to-mp3', name: 'YouTube to MP3', desc: 'High-quality audio extraction' },
+  { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'No watermark, no login' },
+  { href: '/tiktok-downloader', name: 'TikTok Downloader', desc: 'Watermark-free MP4' },
+  { href: '/facebook-video-downloader', name: 'Facebook Video', desc: 'Public videos & Reels' },
+  { href: '/twitter-video-downloader', name: 'Twitter / X Video', desc: 'Videos and GIFs' },
+  { href: '/reddit-video-downloader', name: 'Reddit (with audio)', desc: 'Auto-merged sound' },
+  { href: '/soundcloud-downloader', name: 'SoundCloud to MP3', desc: 'Tracks and mixes' },
+  { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical MP4' },
+];
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
   const shared = pickSharedUrl(params);
@@ -44,6 +56,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         })}
       />
       <JsonLd data={faqSchema(HOMEPAGE_FAQ)} />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Popular video downloaders by Save47',
+          itemListElement: POPULAR_DOWNLOADERS.map((p, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            url: `${SITE.url}${p.href}`,
+            name: p.name,
+          })),
+        }}
+      />
 
       {shared && <ShareTargetHandler url={shared} />}
 
@@ -237,17 +262,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           Dedicated guides for the most-used platforms.
         </p>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { href: '/youtube-downloader', name: 'YouTube Downloader', desc: 'MP4 4K, 1080p, 720p, 480p' },
-            { href: '/youtube-to-mp3', name: 'YouTube to MP3', desc: 'High-quality audio extraction' },
-            { href: '/instagram-reel-downloader', name: 'Instagram Reels', desc: 'No watermark, no login' },
-            { href: '/tiktok-downloader', name: 'TikTok Downloader', desc: 'Watermark-free MP4' },
-            { href: '/facebook-video-downloader', name: 'Facebook Video', desc: 'Public videos & Reels' },
-            { href: '/twitter-video-downloader', name: 'Twitter / X Video', desc: 'Videos and GIFs' },
-            { href: '/reddit-video-downloader', name: 'Reddit (with audio)', desc: 'Auto-merged sound' },
-            { href: '/soundcloud-downloader', name: 'SoundCloud to MP3', desc: 'Tracks and mixes' },
-            { href: '/youtube-shorts-downloader', name: 'YouTube Shorts', desc: 'Vertical MP4' },
-          ].map((p) => (
+          {POPULAR_DOWNLOADERS.map((p) => (
             <Link
               key={p.href}
               href={p.href}
