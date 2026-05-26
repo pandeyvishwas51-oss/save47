@@ -54,3 +54,7 @@ apps/web/public/downloads/
 .cache
 *.pem
 .env*
+
+# Local Railway CLI scratch files (ad-hoc GraphQL queries, not for the repo)
+.railway-*.json
+.railway-*.exp
