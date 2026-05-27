@@ -14,9 +14,9 @@
   },
   "engines": {
     "node": ">=20",
-    "pnpm": ">=9"
+    "pnpm": ">=9.15"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.15.4",
   "devDependencies": {
     "sharp": "^0.34.5",
     "typescript": "^5.4.0"
