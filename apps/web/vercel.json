@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "pnpm install --frozen-lockfile=false",
-  "buildCommand": "pnpm --filter @save47/web build",
+  "installCommand": "npm install --no-package-lock --legacy-peer-deps --omit=optional",
+  "buildCommand": "npm run build",
   "outputDirectory": ".next"
 }
